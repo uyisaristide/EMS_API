@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use  App\Http\Controllers\EmployeesController;
+use App\Http\Controllers\Api\V1\EmployeesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,28 +15,36 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::post('/login',[AuthController::class,'login']);
 
-Route::post('/register',[AuthController::class,'register']);
 
-Route::get('employees', [EmployeesController::class,'index']);
+Route::prefix('v1')->group(function(){
 
-Route::post('employees/{id}', [EmployeesController::class,'show']);
+            Route::post('/login',[AuthController::class,'login']);
 
-Route::get('/employees/search/{name}',[EmployeesController::class,'search']);
+            Route::post('/register',[AuthController::class,'register']);
 
-Route::group(['middleware'=>['auth:sanctum']],function () {
+            Route::get('employees', 'App\Http\Controllers\Api\V1\EmployeesController@index');
 
-        Route::post('employees', [EmployeesController::class,'store']);
+            Route::get('employees/{id}', 'App\Http\Controllers\Api\V1\EmployeesController@show');
 
-        Route::put('employees/{id}', [EmployeesController::class,'update']); 
-        
-        Route::delete('employees/{id}', [EmployeesController::class,'destroy']);
+            Route::get('/employees/search/{name}','App\Http\Controllers\Api\V1\EmployeesController@index');
 
-        Route::post('/logout',[AuthController::class,'logout']);
+            Route::group(['middleware'=>['auth:sanctum']],function () {
+
+                    Route::post('employees', 'App\Http\Controllers\Api\V1\EmployeesController@store');
+
+                    Route::put('employees/{id}', 'App\Http\Controllers\Api\V1\EmployeesController@update'); 
+                    
+                    Route::delete('employees/{id}', 'App\Http\Controllers\Api\V1\EmployeesController@destroy');
+
+                    Route::post('/logout',[AuthController::class,'logout']);
 
     
+            });
 });
+
+
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

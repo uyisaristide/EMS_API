@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Employees;
 
 class EmployeesController extends Controller
 {
@@ -14,7 +15,7 @@ class EmployeesController extends Controller
      */
     public function index()
     {
-        //
+        return Employees::all();
     }
 
     /**
@@ -25,7 +26,7 @@ class EmployeesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return employees::create($request->all());
     }
 
     /**
@@ -36,7 +37,7 @@ class EmployeesController extends Controller
      */
     public function show($id)
     {
-        //
+        return employees::find($id);
     }
 
     /**
@@ -48,7 +49,10 @@ class EmployeesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $employee= Employees::find($id);
+        $employee->update($request->all());
+        
+        return $employee;
     }
 
     /**
@@ -59,6 +63,16 @@ class EmployeesController extends Controller
      */
     public function destroy($id)
     {
-        //
+        return employees::destroy($id);
+    }
+    /**
+     * search a specified name
+     *
+     * @param  string  $name
+     * @return \Illuminate\Http\Response
+     */
+    public function search($name)
+    {
+        return employees::where('name','like','%'.$name.'%')->get();
     }
 }
