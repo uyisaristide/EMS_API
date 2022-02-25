@@ -15,4 +15,6 @@ class Employees extends Model
         'nationality',
         'status'
     ];
+
+    
 }

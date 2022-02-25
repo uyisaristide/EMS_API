@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\V1\EmployeesController;
+use GuzzleHttp\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,10 +18,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 
+
 Route::prefix('v1')->group(function(){
 
-            Route::post('/login',[AuthController::class,'login']);
 
+            
+    Route::get('/logout',[AuthController::class, 'logout'])->middleware('auth:sanctum');
+    Route::post('/login',[AuthController::class,'login']);
             Route::post('/register',[AuthController::class,'register']);
 
             Route::get('employees', 'App\Http\Controllers\Api\V1\EmployeesController@index');
@@ -28,20 +32,33 @@ Route::prefix('v1')->group(function(){
             Route::get('employees/{id}', 'App\Http\Controllers\Api\V1\EmployeesController@show');
 
             Route::get('/employees/search/{name}','App\Http\Controllers\Api\V1\EmployeesController@index');
+            
 
             Route::group(['middleware'=>['auth:sanctum']],function () {
 
-                    Route::post('employees', 'App\Http\Controllers\Api\V1\EmployeesController@store');
+                Route::post('employees', 'App\Http\Controllers\Api\V1\EmployeesController@store');
 
                     Route::put('employees/{id}', 'App\Http\Controllers\Api\V1\EmployeesController@update'); 
                     
                     Route::delete('employees/{id}', 'App\Http\Controllers\Api\V1\EmployeesController@destroy');
 
-                    Route::post('/logout',[AuthController::class,'logout']);
+                    
 
     
             });
 });
+
+// Route::group([
+//         'prefix'=>'v1',
+//         'as'=>'api',
+//         'namespace'=>'App\Http\Controllers\Api\V1',
+//         'middleware'=>['auth:sanctum']
+
+//         ],
+//         function(){
+//             Route::apiResource('employees','EmployeesController');
+//         }
+//     );
 
 
 
