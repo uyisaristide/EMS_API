@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Employees;
-
-
+use PhpParser\Node\Stmt\TryCatch;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class EmployeesController extends Controller
 {
@@ -161,7 +161,13 @@ class EmployeesController extends Controller
      */
     public function show($id)
     {
-        return employees::findOrFail($id);
+        try{
+            return employees::findOrFail($id);
+        }
+        catch (ModelNotFoundException $exception){
+            return response()->json(["msg"=>"there is no employee with that id"],404);
+    }
+        
     }
 
 
@@ -263,10 +269,15 @@ class EmployeesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $employee= Employees::findOrFail($id);
-        $employee->update($request->all());
+        try{
+            $employee= Employees::findOrFail($id);
+            $employee->update($request->all());
         
         return $employee;
+        }
+        catch (ModelNotFoundException $exception){
+                return response()->json(["msg"=>"you are updating on unavailable record"],404);
+        }
     }
 
 
@@ -291,8 +302,8 @@ class EmployeesController extends Controller
      *         
      *     ),
      *      @OA\Response(
-     *          response=419,
-     *          description="Your request is not stateful"
+     *          response=404,
+     *          description="request not found"
      *      ),
      *      @OA\Response(
      *          response=500,
@@ -307,10 +318,18 @@ class EmployeesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request,$id)
     {
-        return employees::destroy($id);
-        
+
+        try {
+            $employee= Employees::findOrFail($id);
+            $employee->delete($request->all());
+
+            return response()->json(['msg'=>"employee deleted"], 200);
+        } 
+        catch (ModelNotFoundException $exception){
+            return response()->json(["msg"=>"you are deleting unavailable id"],404);
+        }
     }
 
 
